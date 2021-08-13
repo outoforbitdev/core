@@ -23,7 +23,7 @@ namespace OOD.Core.Collections
                 {
                     break;
                 }
-                deserializeLineFromCSV(line);
+                DeserializeLineFromCSV(line);
             }
         }
 
@@ -32,7 +32,7 @@ namespace OOD.Core.Collections
             StringReader stream = new StringReader(text);
             DeserializeFromCSV(stream);
         }
-        private void deserializeLineFromCSV(string line)
+        private void DeserializeLineFromCSV(string line)
         {
             string[] fields = CSVSerializer.GetFields(line);
             if (fields.Length < 2)
@@ -53,7 +53,7 @@ namespace OOD.Core.Collections
         {
             foreach (TKey k in Keys)
             {
-                stream.WriteLine(serializeKeyValuePairToCSV(k));
+                stream.WriteLine(SerializeKeyValuePairToCSV(k));
             }
         }
 
@@ -62,12 +62,12 @@ namespace OOD.Core.Collections
             string result = "";
             foreach(TKey k in Keys)
             {
-                result = serializeKeyValuePairToCSV(k);
+                result = SerializeKeyValuePairToCSV(k);
             }
             return result.Trim('\n');
         }
 
-        private string serializeKeyValuePairToCSV(TKey k)
+        private string SerializeKeyValuePairToCSV(TKey k)
         {
             return k.SerializeToCSV() + "," + this[k].SerializeToCSV();
         }

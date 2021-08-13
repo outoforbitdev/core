@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
 using Microsoft.VisualBasic.FileIO;
 using OOD.Core.Serializable;
 
@@ -53,6 +55,20 @@ namespace OOD.Core.Serializable.Tests
             throw new NotImplementedException();
         }
         public override void DeserializeFromXML(TextReader stream)
+        {
+            throw new NotImplementedException();
+        }
+        public override XmlSchema GetSchema()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ReadXml(XmlReader reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void WriteXml(XmlWriter writer)
         {
             throw new NotImplementedException();
         }
