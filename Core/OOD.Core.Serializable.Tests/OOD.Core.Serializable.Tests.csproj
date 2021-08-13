@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Serializable\Serializable.csproj" />
+    <ProjectReference Include="..\OOD.Core.Serializable\OOD.Core.Serializable.csproj" />
   </ItemGroup>
 
 </Project>
