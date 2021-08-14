@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OOD.Core.Collections\OOD.Core.Collections.csproj" />
+    <ProjectReference Include="..\OOD.Core.Serializable.Tests\OOD.Core.Serializable.Tests.csproj" />
     <ProjectReference Include="..\OOD.Core.Serializable\OOD.Core.Serializable.csproj" />
   </ItemGroup>
 

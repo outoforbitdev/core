@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace OOD.Core.Serializable.Tests
 {
-    public class SerializableObject : XMLSerializable, IEquatable<SerializableObject>
+    public class SerializableObject : XmlSerializable, IEquatable<SerializableObject>
     {
         private const string _defaultTag = "SerializableObject";
         protected string _tag
@@ -30,26 +30,31 @@ namespace OOD.Core.Serializable.Tests
             get { return _defaultBooleanTag; }
         }
 
+        public SerializableObject()
+        {
+            Number = 0;
+            _boolean = true;
+        }
         public SerializableObject(int number, bool boolean)
         {
             Number = number;
             _boolean = boolean;
         }
 
-        public override void ReadXml(XmlReader reader)
+        public override void ReadXml(XmlReader reader, bool ignoreItemTag)
         {
-            reader.ReadStartElement(_tag);
+            SerializableObject.AttemptReadStartTag(reader, _tag, ignoreItemTag);
             DeserializeIntProperty(reader, _numberTag, out Number);
             DeserializeBoolProperty(reader, _booleanTag, out _boolean);
-            reader.ReadEndElement();
+            SerializableObject.AttemptReadEndTag(reader, ignoreItemTag);
         }
 
-        public override void WriteXml(XmlWriter writer)
+        public override void WriteXml(XmlWriter writer, bool ignoreItemTag)
         {
-            writer.WriteStartElement(_tag);
+            SerializableObject.AttemptWriteStartTag(writer, _tag, ignoreItemTag);
             SerializeIntProperty(writer, _numberTag, Number);
             SerializeBoolProperty(writer, _booleanTag, _boolean);
-            writer.WriteEndElement();
+            SerializableObject.AttemptWriteEndTag(writer, ignoreItemTag);
         }
 
         public bool Equals(SerializableObject other)

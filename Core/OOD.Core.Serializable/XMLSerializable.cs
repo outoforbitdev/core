@@ -10,22 +10,48 @@ using System.Xml.Serialization;
 
 namespace OOD.Core.Serializable
 {
-    public abstract class XMLSerializable : IXMLSerializable
+    public abstract class XmlSerializable : IXmlSerializable
     {
         protected static readonly XmlSerializer _intSerializer = new XmlSerializer(typeof(int));
         protected static readonly XmlSerializer _boolSerializer = new XmlSerializer(typeof(bool));
         protected static readonly XmlSerializer _stringSerializer = new XmlSerializer(typeof(string));
-        public void DeserializeFromXML(TextReader stream)
+        private const string _defaultTag = "XmlSerializable";
+        protected string _tag
         {
-            XmlReader reader = XmlReader.Create(stream);
-            ReadXml(reader);
+            get { return _defaultTag; }
         }
         public XmlSchema GetSchema()
         {
             return null;
         }
-        public abstract void ReadXml(XmlReader reader);
-        public virtual void SerializeToXML(TextWriter stream)
+        #region Deserialize
+        public void DeserializeFromXml(TextReader stream)
+        {
+            XmlReader reader = XmlReader.Create(stream);
+            ReadXml(reader);
+        }
+        public void ReadXml(XmlReader reader)
+        {
+            ReadXml(reader, false);
+        }
+        public abstract void ReadXml(XmlReader reader, bool ignoreItemTag = false);
+        public static void AttemptReadStartTag(XmlReader writer, string tag, bool ignoreItemTag)
+        {
+            if (!ignoreItemTag)
+            {
+                writer.ReadStartElement(tag);
+            }
+        }
+        public static void AttemptReadEndTag(XmlReader writer, bool ignoreItemTag)
+        {
+            if (!ignoreItemTag)
+            {
+                writer.ReadEndElement();
+            }
+        }
+        #endregion Deserialize
+        #region Serialize
+        public virtual void SerializeToXml(TextWriter stream)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
@@ -34,22 +60,41 @@ namespace OOD.Core.Serializable
             writer.Flush();
             writer.Close();
         }
-        public abstract void WriteXml(XmlWriter writer);
+        public void WriteXml(XmlWriter writer)
+        {
+            WriteXml(writer, false);
+        }
+        public abstract void WriteXml(XmlWriter writer, bool ignoreItemTag = false);
+        public static void AttemptWriteStartTag(XmlWriter writer, string tag, bool ignoreItemTag)
+        {
+            if (!ignoreItemTag)
+            {
+                writer.WriteStartElement(tag);
+            }
+        }
+        public static void AttemptWriteEndTag(XmlWriter writer, bool ignoreItemTag)
+        {
+            if (!ignoreItemTag)
+            {
+                writer.WriteEndElement();
+            }
+        }
+        #endregion Serialize
 
         #region Serialize properties
-        protected static void SerializeIntProperty(XmlWriter writer, string tag, int property, bool ignoreItemTag = true)
+        public static void SerializeIntProperty(XmlWriter writer, string tag, int property, bool ignoreItemTag = true)
         {
             SerializeProperty(writer, _intSerializer, tag, property, ignoreItemTag);
         }
-        protected static void SerializeBoolProperty(XmlWriter writer, string tag, bool property, bool ignoreItemTag = true)
+        public static void SerializeBoolProperty(XmlWriter writer, string tag, bool property, bool ignoreItemTag = true)
         {
             SerializeStringProperty(writer, tag, property.ToString().ToLower(), ignoreItemTag);
         }
-        protected static void SerializeStringProperty(XmlWriter writer, string tag, string property, bool ignoreItemTag = true)
+        public static void SerializeStringProperty(XmlWriter writer, string tag, string property, bool ignoreItemTag = true)
         {
             SerializeProperty(writer, _stringSerializer, tag, property, ignoreItemTag);
         }
-        protected static void SerializeProperty<T>(XmlWriter writer, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
+        public static void SerializeProperty<T>(XmlWriter writer, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
         {
             writer.WriteStartElement(tag);
             try
@@ -68,20 +113,13 @@ namespace OOD.Core.Serializable
                 writer.WriteEndElement();
             }
         }
-        protected static void SerializeXmlProperty<T>(XmlWriter writer, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
-            where T: IXMLSerializable
+        public static void SerializeXmlProperty<T>(XmlWriter writer, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
+            where T: IXmlSerializable
         {
             writer.WriteStartElement(tag);
             try
             {
-                if (ignoreItemTag)
-                {
-                    property.WriteXml(writer);
-                }
-                else
-                {
-                    serializer.Serialize(writer, property);
-                }
+                property.WriteXml(writer, ignoreItemTag);
             }
             finally
             {
@@ -90,19 +128,19 @@ namespace OOD.Core.Serializable
         }
         #endregion Serialize properties
         #region Deserialize properties
-        protected static void DeserializeIntProperty(XmlReader reader, string tag, out int property, bool ignoreItemTag = true)
+        public static void DeserializeIntProperty(XmlReader reader, string tag, out int property, bool ignoreItemTag = true)
         {
             DeserializeProperty(reader, _intSerializer, tag, out property, ignoreItemTag);
         }
-        protected static void DeserializeBoolProperty(XmlReader reader, string tag, out bool property, bool ignoreItemTag = true)
+        public static void DeserializeBoolProperty(XmlReader reader, string tag, out bool property, bool ignoreItemTag = true)
         {
             DeserializeProperty(reader, _boolSerializer, tag, out property, ignoreItemTag);
         }
-        protected static void DeserializeStringProperty(XmlReader reader, string tag, out string property, bool ignoreItemTag = true)
+        public static void DeserializeStringProperty(XmlReader reader, string tag, out string property, bool ignoreItemTag = true)
         {
             DeserializeProperty(reader, _stringSerializer, tag, out property, ignoreItemTag);
         }
-        protected static void DeserializeProperty<T>(XmlReader reader, XmlSerializer serializer, string tag, out T property, bool ignoreItemTag = true)
+        public static void DeserializeProperty<T>(XmlReader reader, XmlSerializer serializer, string tag, out T property, bool ignoreItemTag = true)
         {
             reader.ReadStartElement(tag);
             try
@@ -121,8 +159,8 @@ namespace OOD.Core.Serializable
                 reader.ReadEndElement();
             }
         }
-        protected static void DeserializeXmlProperty<T>(XmlReader reader, string tag, XmlSerializer serializer, T property, bool ignoreItemTag = true)
-            where T: IXmlSerializable
+        public static void DeserializeXmlProperty<T>(XmlReader reader, string tag, XmlSerializer serializer, T property, bool ignoreItemTag = true)
+            where T: System.Xml.Serialization.IXmlSerializable
         {
             reader.ReadStartElement(tag);
             try
