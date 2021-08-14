@@ -13,6 +13,11 @@ namespace OOD.Core.Collections
         where TKey: ICSVSerializable, IXMLSerializable, new()
         where TValue: ICSVSerializable, IXMLSerializable, new()
     {
+        private const string itemTag = "item";
+        private const string keyTag = "key";
+        private const string valueTag = "value";
+        private static readonly XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
+        private static readonly XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
         public void DeserializeFromCSV(TextReader stream)
         {
             while (true)
@@ -97,7 +102,47 @@ namespace OOD.Core.Collections
 
         public void WriteXml(XmlWriter writer)
         {
-            throw new NotImplementedException();
+            foreach (var keyValuePair in this)
+            {
+                this.WriteItem(writer, keyValuePair);
+            }
+        }
+        private void WriteItem(XmlWriter writer, KeyValuePair<TKey, TValue> keyValuePair)
+        {
+            writer.WriteStartElement(itemTag);
+            try
+            {
+                this.WriteKey(writer, keyValuePair.Key);
+                this.WriteValue(writer, keyValuePair.Value);
+            }
+            finally
+            {
+                writer.WriteEndElement();
+            }
+        }
+        private void WriteKey(XmlWriter writer, TKey key)
+        {
+            writer.WriteStartElement(keyTag);
+            try
+            {
+                keySerializer.Serialize(writer, key);
+            }
+            finally
+            {
+                writer.WriteEndElement();
+            }
+        }
+        private void WriteValue(XmlWriter writer, TValue value)
+        {
+            writer.WriteStartElement(valueTag);
+            try
+            {
+                valueSerializer.Serialize(writer, value);
+            }
+            finally
+            {
+                writer.WriteEndElement();
+            }
         }
     }
 }
