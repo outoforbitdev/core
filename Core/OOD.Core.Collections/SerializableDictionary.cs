@@ -9,74 +9,78 @@ using System.Xml.Serialization;
 
 namespace OOD.Core.Collections
 {
-    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ICSVSerializable , IXMLSerializable
-        where TKey: ICSVSerializable, IXMLSerializable, new()
-        where TValue: ICSVSerializable, IXMLSerializable, new()
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXMLSerializable
+        where TKey: IXMLSerializable, new()
+        where TValue: IXMLSerializable, new()
     {
         private const string itemTag = "item";
         private const string keyTag = "key";
         private const string valueTag = "value";
         private static readonly XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
         private static readonly XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
-        public void DeserializeFromCSV(TextReader stream)
-        {
-            while (true)
-            {
-                this.Clear();
-                string line = stream.ReadLine();
-                if (line == null)
-                {
-                    break;
-                }
-                DeserializeLineFromCSV(line);
-            }
-        }
 
-        public void DeserializeFromCSV(string text)
-        {
-            StringReader stream = new StringReader(text);
-            DeserializeFromCSV(stream);
-        }
-        private void DeserializeLineFromCSV(string line)
-        {
-            string[] fields = CSVSerializer.GetFields(line);
-            if (fields.Length < 2)
-            {
-                throw new CSVUnparseableException("Unable to parse as key-value pair: " + line);
-            }
-            TKey key = new TKey();
-            key.DeserializeFromCSV(fields[0]);
-            TValue value = new TValue();
-            value.DeserializeFromCSV(string.Join(",", fields.TakeLast(fields.Length - 1)));
-            if (!TryAdd(key, value))
-            {
-                throw new CSVUnparseableException("Duplicate key: " + key.ToString());
-            }
-        }
+        #region CSV serialization
+        //public void DeserializeFromCSV(TextReader stream)
+        //{
+        //    while (true)
+        //    {
+        //        this.Clear();
+        //        string line = stream.ReadLine();
+        //        if (line == null)
+        //        {
+        //            break;
+        //        }
+        //        DeserializeLineFromCSV(line);
+        //    }
+        //}
 
-        public void SerializeToCSV(TextWriter stream)
-        {
-            foreach (TKey k in Keys)
-            {
-                stream.WriteLine(SerializeKeyValuePairToCSV(k));
-            }
-        }
+        //public void DeserializeFromCSV(string text)
+        //{
+        //    StringReader stream = new StringReader(text);
+        //    DeserializeFromCSV(stream);
+        //}
+        //private void DeserializeLineFromCSV(string line)
+        //{
+        //    string[] fields = CSVSerializer.GetFields(line);
+        //    if (fields.Length < 2)
+        //    {
+        //        throw new CSVUnparseableException("Unable to parse as key-value pair: " + line);
+        //    }
+        //    TKey key = new TKey();
+        //    key.DeserializeFromCSV(fields[0]);
+        //    TValue value = new TValue();
+        //    value.DeserializeFromCSV(string.Join(",", fields.TakeLast(fields.Length - 1)));
+        //    if (!TryAdd(key, value))
+        //    {
+        //        throw new CSVUnparseableException("Duplicate key: " + key.ToString());
+        //    }
+        //}
 
-        public string SerializeToCSV()
-        {
-            string result = "";
-            foreach(TKey k in Keys)
-            {
-                result = SerializeKeyValuePairToCSV(k);
-            }
-            return result.Trim('\n');
-        }
+        //public void SerializeToCSV(TextWriter stream)
+        //{
+        //    foreach (TKey k in Keys)
+        //    {
+        //        stream.WriteLine(SerializeKeyValuePairToCSV(k));
+        //    }
+        //}
 
-        private string SerializeKeyValuePairToCSV(TKey k)
-        {
-            return k.SerializeToCSV() + "," + this[k].SerializeToCSV();
-        }
+        //public string SerializeToCSV()
+        //{
+        //    string result = "";
+        //    foreach(TKey k in Keys)
+        //    {
+        //        result = SerializeKeyValuePairToCSV(k);
+        //    }
+        //    return result.Trim('\n');
+        //}
 
+        //private string SerializeKeyValuePairToCSV(TKey k)
+        //{
+        //    return k.SerializeToCSV() + "," + this[k].SerializeToCSV();
+        //}
+        #endregion CSV serialization
+
+        #region XML serialization
         public void SerializeToXML(TextWriter stream)
         {
             XmlWriter writer = XmlWriter.Create(stream);
@@ -144,5 +148,6 @@ namespace OOD.Core.Collections
                 writer.WriteEndElement();
             }
         }
+        #endregion XML serialization
     }
 }
