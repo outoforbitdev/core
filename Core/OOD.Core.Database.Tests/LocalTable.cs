@@ -42,7 +42,7 @@ namespace OOD.Core.Database.Tests
             EntityObject entityTwo = new EntityObject("two", "two", 2, false);
             EntityObject entityThree = new EntityObject("three", "a much longer string", 59665, true);
 
-            Database db = new Database();
+            Core.Database.Database db = new Core.Database.Database();
             LocalTable<EntityObject> table = new LocalTable<EntityObject>(db);
 
             table.AddOrUpdateEntity(entityOne);
