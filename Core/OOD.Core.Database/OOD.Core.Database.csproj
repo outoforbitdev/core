@@ -5,10 +5,11 @@
     <Authors>Out of Orbit Development</Authors>
     <Company>Out of Orbit Development</Company>
     <RepositoryUrl>https://github.com/outoforbitdev/core</RepositoryUrl>
-    <AssemblyName>OOD.Core.Collections_0</AssemblyName>
+    <AssemblyName>OOD.Core.Database_0</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OOD.Core.Collections\OOD.Core.Collections.csproj" />
     <ProjectReference Include="..\OOD.Core.Serializable\OOD.Core.Serializable.csproj" />
   </ItemGroup>
 
