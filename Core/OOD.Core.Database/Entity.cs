@@ -15,6 +15,13 @@ namespace OOD.Core.Database
         public string ID
         {
             get { return _id; }
+            set 
+            { 
+                if (ID == null)
+                {
+                    _id = value;
+                } 
+            }
         }
         protected string _id;
         protected string _tag = "Entity";

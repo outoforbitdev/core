@@ -15,10 +15,21 @@ namespace OOD.Core.Database.Tests
         public Item<bool> BoolValue;
         private new string _tag = "EntityObject";
 
+        public EntityObject()
+        {
+            Clear();
+        }
+
         public EntityObject(string id)
         {
             _id = id;
             Clear();
+        }
+        public EntityObject(string id, string stringObject, int intObject, bool boolObject): this(id)
+        {
+            StringValue.Value = stringObject;
+            IntValue.Value = intObject;
+            BoolValue.Value = boolObject;
         }
 
         protected override void Clear()

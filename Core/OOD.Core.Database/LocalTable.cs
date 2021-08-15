@@ -1,13 +1,14 @@
 ﻿using OOD.Core.Collections;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace OOD.Core.Database
 {
-    class LocalTable<T> : Table<T> where T : Entity, new()
+    public class LocalTable<T> : Table<T> where T : Entity, new()
     {
         private SerializableDictionary<string, T> _entities;
         public LocalTable(Database db) : base(db)
@@ -64,6 +65,10 @@ namespace OOD.Core.Database
             {
                 return false;
             }
+        }
+        public override void SaveAs(TextWriter stream)
+        {
+            _entities.SerializeToXml(stream);
         }
 
         public override bool TryAddEntity(T entity)

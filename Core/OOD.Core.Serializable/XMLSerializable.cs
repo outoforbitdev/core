@@ -39,14 +39,14 @@ namespace OOD.Core.Serializable
         {
             if (!ignoreItemTag)
             {
-                writer.ReadStartElement(tag);
+                try { writer.ReadStartElement(tag); } catch { }
             }
         }
         public static void AttemptReadEndTag(XmlReader writer, bool ignoreItemTag)
         {
             if (!ignoreItemTag)
             {
-                writer.ReadEndElement();
+                try { writer.ReadEndElement(); } catch { }
             }
         }
         #endregion Deserialize

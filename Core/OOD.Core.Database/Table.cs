@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,5 +23,6 @@ namespace OOD.Core.Database
         public abstract bool Load(string path);
         public abstract bool Save();
         public abstract bool SaveAs(string path);
+        public abstract void SaveAs(TextWriter stream);
     }
 }
