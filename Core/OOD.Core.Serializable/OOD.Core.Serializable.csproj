@@ -2,7 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <SynchReleaseVersion>false</SynchReleaseVersion>
+    <Authors>Out of Orbit Development</Authors>
+    <Company>Out of Orbit Development</Company>
+    <RepositoryUrl>https://github.com/outoforbitdev/core</RepositoryUrl>
+    <AssemblyName>OOD.Core.Serializable_0</AssemblyName>
   </PropertyGroup>
 
 </Project>
