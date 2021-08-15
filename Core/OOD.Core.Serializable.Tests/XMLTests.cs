@@ -14,8 +14,8 @@ namespace OOD.Core.Serializable.Tests
         private const string _simpleString = 
             "<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
             "<SerializableObject>" +
-            "<Number>1</Number>" +
-            "<Boolean>true</Boolean>" +
+                "<Number>1</Number>" +
+                "<Boolean>true</Boolean>" +
             "</SerializableObject>";
 
         [Fact]

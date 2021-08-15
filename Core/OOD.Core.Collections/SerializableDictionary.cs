@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace OOD.Core.Collections
 {
-    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, Serializable.IXmlSerializable
+    public class SerializableDictionary<TKey, TValue> : System.Collections.Generic.Dictionary<TKey, TValue>, Serializable.IXmlSerializable
         where TValue: Serializable.IXmlSerializable, new()
     {
         private const string _tag = "SerializableDictionary";

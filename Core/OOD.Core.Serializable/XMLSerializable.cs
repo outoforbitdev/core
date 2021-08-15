@@ -101,7 +101,7 @@ namespace OOD.Core.Serializable
             {
                 if (ignoreItemTag)
                 {
-                    writer.WriteString(property.ToString());
+                    writer.WriteValue(property);
                 }
                 else
                 {
@@ -140,9 +140,10 @@ namespace OOD.Core.Serializable
         {
             DeserializeProperty(reader, _stringSerializer, tag, out property, ignoreItemTag);
         }
-        public static void DeserializeProperty<T>(XmlReader reader, XmlSerializer serializer, string tag, out T property, bool ignoreItemTag = true)
+        public static bool DeserializeProperty<T>(XmlReader reader, XmlSerializer serializer, string tag, out T property, bool ignoreItemTag = true)
         {
-            reader.ReadStartElement(tag);
+            property = default(T);
+            try { reader.ReadStartElement(tag); } catch { return false; }
             try
             {
                 if (ignoreItemTag)
@@ -158,6 +159,7 @@ namespace OOD.Core.Serializable
             {
                 reader.ReadEndElement();
             }
+            return true;
         }
         public static void DeserializeXmlProperty<T>(XmlReader reader, string tag, XmlSerializer serializer, T property, bool ignoreItemTag = true)
             where T: System.Xml.Serialization.IXmlSerializable

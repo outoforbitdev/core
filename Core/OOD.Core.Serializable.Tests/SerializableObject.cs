@@ -13,7 +13,7 @@ namespace OOD.Core.Serializable.Tests
     public class SerializableObject : XmlSerializable, IEquatable<SerializableObject>
     {
         private const string _defaultTag = "SerializableObject";
-        protected string _tag
+        protected new string _tag
         {
             get { return _defaultTag; }
         }
