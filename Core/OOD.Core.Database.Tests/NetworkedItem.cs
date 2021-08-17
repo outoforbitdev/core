@@ -12,7 +12,7 @@ namespace OOD.Core.Database.Tests
     public class NetworkedItem
     {
         private string _defaultString = "";
-        private string _valueString = "<?xml version=\"1.0\" encoding=\"utf-16\"?><ItemValue>real value</ItemValue>";
+        private string _valueString = "<?xml version=\"1.0\" encoding=\"utf-16\"?><ItemValue>two</ItemValue>";
         private NetworkedItem<EntityObject> Default()
         {
             return new NetworkedItem<EntityObject>("ItemValue", LocalTable.EntityObjectTable(), null);
@@ -26,8 +26,8 @@ namespace OOD.Core.Database.Tests
         public void GetValue()
         {
             var value = Default();
-            value.Value = "real value";
-            Assert.Equal("real value", value.Value);
+            value.Value = LocalTable.EntityObjectTable()["two"];
+            Assert.Equal(LocalTable.EntityObjectTable()["two"], value.Value);
         }
         [Fact]
         public void GetDefaultBool()
@@ -38,7 +38,7 @@ namespace OOD.Core.Database.Tests
         public void GetValueBool()
         {
             var value = Default();
-            value.Value = "real value";
+            value.Value = LocalTable.EntityObjectTable()["two"];
             Assert.False(value.UsingDefaultValue);
         }
         [Fact]
@@ -57,13 +57,13 @@ namespace OOD.Core.Database.Tests
             XmlReader reader = XmlReader.Create(stream);
             var value = Default();
             value.ReadXml(reader, true);
-            Assert.Equal("default", value.Value);
+            Assert.Null(value.Value);
         }
         [Fact]
         public void SerializeValue()
         {
             var value = Default();
-            value.Value = "real value";
+            value.Value = LocalTable.EntityObjectTable()["two"];
             StringWriter stream = new StringWriter();
             XmlWriter writer = XmlWriter.Create(stream);
             value.WriteXml(writer, true);
@@ -73,12 +73,11 @@ namespace OOD.Core.Database.Tests
         [Fact]
         public void DeserializeValue()
         {
-            var value = Default();
-            value.Value = "real value";
+            NetworkedItem<EntityObject> value = Default();
             StringReader stream = new StringReader(_valueString);
             XmlReader reader = XmlReader.Create(stream);
             value.ReadXml(reader, true);
-            Assert.Equal("real value", value.Value);
+            Assert.Equal(LocalTable.EntityObjectTable()["two"], value.Value);
         }
     }
 }

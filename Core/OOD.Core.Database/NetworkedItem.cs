@@ -39,6 +39,7 @@ namespace OOD.Core.Database
             {
                 _value = value;
                 _useDefaultValue = false;
+                _entityID = value.ID;
             }
         }
         public bool UsingDefaultValue { get { return _useDefaultValue; } }
@@ -66,7 +67,7 @@ namespace OOD.Core.Database
         {
             if (!UsingDefaultValue)
             {
-                SerializeProperty(writer, serializer, _tag, _value, true);
+                SerializeProperty(writer, serializer, _tag, _entityID, true);
             }
         }
 
