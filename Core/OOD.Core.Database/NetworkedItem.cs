@@ -9,15 +9,14 @@ using System.Xml;
 namespace OOD.Core.Database
 {
     public class NetworkedItem<T>: XmlSerializable, IEquatable<Item<T>>
-        where T : IEntity, IEquatable<T>
+        where T : Entity, IEquatable<T>
     {
         private T _defaultValue;
         private string _entityID;
-        private string _tableID;
         private T _value;
         private new readonly string _tag;
         private static readonly System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
-        private Database _db;
+        private Table<T> _table;
         public T Value
         {
             get
@@ -29,7 +28,7 @@ namespace OOD.Core.Database
                 if (_value == null)
                 {
                     T entityValue;
-                    if (_db.TryGetEntity<T>(_tableID, _entityID, out entityValue))
+                    if (_table.TryGetEntity(_entityID, out entityValue))
                     {
                         _value = entityValue;
                     }
@@ -44,17 +43,18 @@ namespace OOD.Core.Database
         }
         public bool UsingDefaultValue { get { return _useDefaultValue; } }
         private bool _useDefaultValue;
-        public NetworkedItem(string tag, string tableID, T defaultValue)
+        public NetworkedItem(string tag, Table<T> table, T defaultValue)
         {
             _tag = tag;
             _defaultValue = defaultValue;
             _useDefaultValue = true;
+            _table = table;
         }
         public override void ReadXml(XmlReader reader, bool ignoreItemTag = false)
         {
             try
             {
-                _useDefaultValue = !DeserializeProperty(reader, serializer, _tag, out _value, true);
+                _useDefaultValue = !DeserializeProperty(reader, serializer, _tag, out _entityID, true);
             }
             finally
             {

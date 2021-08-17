@@ -15,15 +15,12 @@ namespace OOD.Core.Database.Tests
         private string _valueString = "<?xml version=\"1.0\" encoding=\"utf-16\"?><ItemValue>real value</ItemValue>";
         private NetworkedItem<EntityObject> Default()
         {
-            OOD.Core.Database.Database db = new OOD.Core.Database.Database();
-            db.AddTable("entityTable", LocalTable.EntityObjectTable());
-
-            return new NetworkedItem<string>("ItemValue", "default");
+            return new NetworkedItem<EntityObject>("ItemValue", LocalTable.EntityObjectTable(), null);
         }
         [Fact]
         public void GetDefault()
         {
-            Assert.Equal("default", Default().Value);
+            Assert.Null(Default().Value);
         }
         [Fact]
         public void GetValue()

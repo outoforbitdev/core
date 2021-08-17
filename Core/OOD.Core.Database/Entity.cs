@@ -25,7 +25,6 @@ namespace OOD.Core.Database
         }
         protected string _id;
         protected string _tag = "Entity";
-        internal Database _db;
 
         protected abstract void Clear();
         public void DeserializeFromXml(TextReader stream)

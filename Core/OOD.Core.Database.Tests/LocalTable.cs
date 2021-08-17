@@ -40,9 +40,7 @@ namespace OOD.Core.Database.Tests
             EntityObject entityOne = new EntityObject("one");
             EntityObject entityTwo = new EntityObject("two", "two", 2, false);
             EntityObject entityThree = new EntityObject("three", "a much longer string", 59665, true);
-
-            Core.Database.Database db = new Core.Database.Database();
-            LocalTable<EntityObject> table = new LocalTable<EntityObject>(db);
+            LocalTable<EntityObject> table = new LocalTable<EntityObject>();
 
             table.AddOrUpdateEntity(entityOne);
             table.AddOrUpdateEntity(entityTwo);
@@ -54,19 +52,8 @@ namespace OOD.Core.Database.Tests
         [Fact]
         public void NonSerializedAttribute()
         {
-            EntityObject entityOne = new EntityObject("one");
-            EntityObject entityTwo = new EntityObject("two", "two", 2, false);
-            EntityObject entityThree = new EntityObject("three", "a much longer string", 59665, true);
-
-            Core.Database.Database db = new Core.Database.Database();
-            LocalTable<EntityObject> table = new LocalTable<EntityObject>(db);
-
-            table.AddOrUpdateEntity(entityOne);
-            table.AddOrUpdateEntity(entityTwo);
-            table.AddOrUpdateEntity(entityThree);
-
             StringWriter stream = new StringWriter();
-            table.SaveAs(stream);
+            EntityObjectTable().SaveAs(stream);
             Assert.Equal(_string, stream.ToString());
         }
     }
