@@ -11,7 +11,7 @@ namespace OOD.Core.Database
     public class LocalTable<T> : Table<T> where T : Entity, new()
     {
         private SerializableDictionary<string, T> _entities;
-        public LocalTable(Database db) : base(db)
+        public LocalTable()
         {
             _entities = new SerializableDictionary<string, T>();
         }
@@ -25,13 +25,18 @@ namespace OOD.Core.Database
             set
             {
                 AddOrUpdateEntity(value);
-                value._db = _db;
             }
         }
 
         public override void AddOrUpdateEntity(T entity)
         {
             _entities[entity.ID] = entity;
+        }
+
+        public override bool Contains(string entityId)
+        {
+            T value;
+            return TryGetEntity(entityId, out value);
         }
 
         public override bool Load(string path)
@@ -73,12 +78,7 @@ namespace OOD.Core.Database
 
         public override bool TryAddEntity(T entity)
         {
-            if (_entities.TryAdd(entity.ID, entity))
-            {
-                entity._db = _db;
-                return true;
-            }
-            return false;
+            return _entities.TryAdd(entity.ID, entity);
         }
 
         public override bool TryGetEntity(string entityID, out T entity)
@@ -91,7 +91,6 @@ namespace OOD.Core.Database
             if (_entities.ContainsKey(entity.ID))
             {
                 _entities[entity.ID] = entity;
-                entity._db = _db;
                 return true;
             }
             return false;
