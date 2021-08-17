@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OOD.Core.Database
 {
-    public class LocalTable<T> : Table<T> where T : Entity, new()
+    public class LocalTable<T> : Table<T> where T : IEntity, new()
     {
         private SerializableDictionary<string, T> _entities;
         public LocalTable(Database db) : base(db)
@@ -32,6 +32,12 @@ namespace OOD.Core.Database
         public override void AddOrUpdateEntity(T entity)
         {
             _entities[entity.ID] = entity;
+        }
+
+        public override bool Contains(string entityId)
+        {
+            T value;
+            return TryGetEntity(entityId, out value);
         }
 
         public override bool Load(string path)

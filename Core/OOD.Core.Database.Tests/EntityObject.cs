@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace OOD.Core.Database.Tests
 {
-    class EntityObject: OOD.Core.Database.Entity, IEquatable<EntityObject>
+    public class EntityObject: OOD.Core.Database.Entity, IEquatable<EntityObject>
     {
         public Item<string> StringValue;
         public Item<int> IntValue;

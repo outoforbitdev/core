@@ -8,8 +8,8 @@ using System.Xml;
 
 namespace OOD.Core.Database
 {
-    class NetworkedItem<T>: XmlSerializable, IEquatable<Item<T>>
-        where T : Entity, IEquatable<T>
+    public class NetworkedItem<T>: XmlSerializable, IEquatable<Item<T>>
+        where T : IEntity, IEquatable<T>
     {
         private T _defaultValue;
         private string _entityID;
@@ -28,10 +28,10 @@ namespace OOD.Core.Database
                 }
                 if (_value == null)
                 {
-                    Entity entityValue;
-                    if (_db.TryGetEntity<Entity>(_tableID, _entityID, out entityValue))
+                    T entityValue;
+                    if (_db.TryGetEntity<T>(_tableID, _entityID, out entityValue))
                     {
-                        _value = (T)entityValue;
+                        _value = entityValue;
                     }
                 }
                 return _value;

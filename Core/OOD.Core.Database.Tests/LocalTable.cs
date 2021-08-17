@@ -35,6 +35,22 @@ namespace OOD.Core.Database.Tests
                 "</Item>" +
             "</SerializableDictionary>";
 
+        public static LocalTable<EntityObject> EntityObjectTable()
+        {
+            EntityObject entityOne = new EntityObject("one");
+            EntityObject entityTwo = new EntityObject("two", "two", 2, false);
+            EntityObject entityThree = new EntityObject("three", "a much longer string", 59665, true);
+
+            Core.Database.Database db = new Core.Database.Database();
+            LocalTable<EntityObject> table = new LocalTable<EntityObject>(db);
+
+            table.AddOrUpdateEntity(entityOne);
+            table.AddOrUpdateEntity(entityTwo);
+            table.AddOrUpdateEntity(entityThree);
+
+            return table;
+        }
+
         [Fact]
         public void NonSerializedAttribute()
         {

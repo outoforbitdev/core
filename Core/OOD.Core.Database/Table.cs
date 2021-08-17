@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OOD.Core.Database
 {
-    public abstract class Table<T> where T:Entity
+    public abstract class Table<T> where T:IEntity
     {
         protected Database _db;
         protected string _path;
@@ -15,6 +15,7 @@ namespace OOD.Core.Database
         {
             _db = db;
         }
+        public abstract bool Contains(string entityId);
         public abstract bool TryAddEntity(T entity);
         public abstract bool TryUpdateEntity(T entity);
         public abstract void AddOrUpdateEntity(T entity);
