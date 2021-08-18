@@ -135,6 +135,11 @@ namespace OOD.Core.Collections
                 XmlSerializable.AttemptReadEndTag(reader, ignoreItemTag);
             }
         }
+
+        /// <summary>
+        /// Generates a TKey-TValue pair from the XML representation.
+        /// </summary>
+        /// <param name="reader">The XmlReader object from which the TKey-TValue pair is deserialized.</param>
         private void ReadItem(XmlReader reader)
         {
             reader.ReadStartElement(_itemTag);
@@ -147,6 +152,12 @@ namespace OOD.Core.Collections
                 reader.ReadEndElement();
             }
         }
+
+        /// <summary>
+        /// Generates a TKey object from the XML representation.
+        /// </summary>
+        /// <param name="reader">The XmlReader object from which the TKey is deserialized.</param>
+        /// <returns>The deserialized TKey object.</returns>
         private TKey ReadKey(XmlReader reader)
         {
             reader.ReadStartElement(_keyTag);
@@ -159,6 +170,12 @@ namespace OOD.Core.Collections
                 reader.ReadEndElement();
             }
         }
+
+        /// <summary>
+        /// Generates a TValue object from the XML representation.
+        /// </summary>
+        /// <param name="reader">The XmlReader object from which the TValue is deserialized.</param>
+        /// <returns>The deserialized TValue object.</returns>
         private TValue ReadValue(XmlReader reader)
         {
             reader.ReadStartElement(_valueTag);
@@ -189,6 +206,12 @@ namespace OOD.Core.Collections
             }
             XmlSerializable.AttemptWriteEndTag(writer, ignoreItemTag);
         }
+
+        /// <summary>
+        /// Creates the XML representation of a TKey-TValue pair.
+        /// </summary>
+        /// <param name="writer">The XmlWriter object to which the TKey-TValue pair is serialized.</param>
+        /// <param name="keyValuePair">The TKey-TValue pair to serialize.</param>
         private void WriteItem(XmlWriter writer, KeyValuePair<TKey, TValue> keyValuePair)
         {
             writer.WriteStartElement(_itemTag);
@@ -202,6 +225,12 @@ namespace OOD.Core.Collections
                 writer.WriteEndElement();
             }
         }
+
+        /// <summary>
+        /// Creates the XML representation of a TKey object.
+        /// </summary>
+        /// <param name="writer">The XmlWriter object to which the TKey is serialized.</param>
+        /// <param name="key">The TKey to serialize.</param>
         private void WriteKey(XmlWriter writer, TKey key)
         {
             writer.WriteStartElement(_keyTag);
@@ -214,6 +243,12 @@ namespace OOD.Core.Collections
                 writer.WriteEndElement();
             }
         }
+
+        /// <summary>
+        /// Creates the XML representation of a TValue object.
+        /// </summary>
+        /// <param name="writer">The XmlWriter object to which the Tvalue is serialized.</param>
+        /// <param name="value">The TValue to serialize.</param>
         private void WriteValue(XmlWriter writer, TValue value)
         {
             writer.WriteStartElement(_valueTag);
