@@ -32,31 +32,34 @@ namespace OOD.Core.Database.Tests
             BoolValue.Value = boolObject;
         }
 
-        protected override void Clear()
+        protected void Clear()
         {
             StringValue = new Item<string>("StringValue", "default string value");
             IntValue = new Item<int>("IntValue", 32);
             BoolValue = new Item<bool>("BoolValue", true);
         }
 
-        public override void ReadXml(XmlReader reader, bool ignoreItemTag = false)
+        public override void ReadXml(XmlReader reader, bool includeStartEndElement = true)
         {
+            Clear();
             try { _id = reader.GetAttribute(0); } catch { }
-            XmlSerializable.AttemptReadStartTag(reader, _tag, ignoreItemTag);
-            DeserializeItemFromXml(reader, StringValue);
-            DeserializeItemFromXml(reader, IntValue);
-            DeserializeItemFromXml(reader, BoolValue);
-            XmlSerializable.AttemptReadEndTag(reader, ignoreItemTag);
+            if (XmlSerializable.AttemptReadStartElement(reader, _tag, includeStartEndElement))
+            {
+                StringValue.ReadXml(reader);
+                IntValue.ReadXml(reader);
+                BoolValue.ReadXml(reader);
+                XmlSerializable.AttemptReadEndElement(reader, includeStartEndElement);
+            }
         }
 
-        public override void WriteXml(XmlWriter writer, bool ignoreItemTag = false)
+        public override void WriteXml(XmlWriter writer, bool includeStartEndElement = true)
         {
-            XmlSerializable.AttemptWriteStartTag(writer, _tag, ignoreItemTag);
+            XmlSerializable.AttemptWriteStartElement(writer, _tag, includeStartEndElement);
             writer.WriteAttributeString("id", _id);
-            SerializeItemToXml(writer, StringValue);
-            SerializeItemToXml(writer, IntValue);
-            SerializeItemToXml(writer, BoolValue);
-            XmlSerializable.AttemptWriteEndTag(writer, ignoreItemTag);
+            StringValue.WriteXml(writer);
+            IntValue.WriteXml(writer);
+            BoolValue.WriteXml(writer);
+            XmlSerializable.AttemptWriteEndElement(writer, includeStartEndElement);
         }
 
         public bool Equals(EntityObject other)

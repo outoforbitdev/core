@@ -10,7 +10,7 @@ using System.Xml.Schema;
 
 namespace OOD.Core.Database
 {
-    public abstract class Entity: IXmlSerializable
+    public abstract class Entity: XmlSerializable
     {
         public string ID
         {
@@ -25,51 +25,5 @@ namespace OOD.Core.Database
         }
         protected string _id;
         protected string _tag = "Entity";
-
-        protected abstract void Clear();
-        public void DeserializeFromXml(TextReader stream)
-        {
-            Clear();
-            XmlReader reader = XmlReader.Create(stream);
-            ReadXml(reader, false);
-            reader.Close();
-        }
-
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-            ReadXml(reader, false);
-        }
-
-        public abstract void ReadXml(XmlReader reader, bool ignoreItemTag = false);
-        protected static void DeserializeItemFromXml<T>(XmlReader reader, Item<T> item)
-            where T: IEquatable<T>
-        {
-            item.ReadXml(reader, false);
-        }
-
-        public void SerializeToXml(TextWriter stream)
-        {
-            XmlWriter writer = XmlWriter.Create(stream);
-            WriteXml(writer, false);
-            writer.Flush();
-            writer.Close();
-        }
-
-        public abstract void WriteXml(XmlWriter writer, bool ignoreItemTag = false);
-
-        public void WriteXml(XmlWriter writer)
-        {
-            WriteXml(writer, false);
-        }
-        protected static void SerializeItemToXml<T>(XmlWriter writer, Item<T> item)
-            where T : IEquatable<T>
-        {
-            item.WriteXml(writer, false);
-        }
     }
 }

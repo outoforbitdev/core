@@ -42,7 +42,16 @@ namespace OOD.Core.Database
         {
             try
             {
-                _useDefaultValue = !DeserializeProperty(reader, serializer, _tag, out _value, true);
+                if (XmlSerializable.IsTypeCLR(typeof(T)))
+                {
+                    _useDefaultValue = !DeserializeCLRProperty(reader, _tag, out _value);
+                }
+                else if (typeof(T) is IXmlSerializable)
+                {
+                    IXmlSerializable xmlValue = (IXmlSerializable)_value;
+                    _useDefaultValue = !DeserializeXmlProperty(reader, _tag, xmlValue);
+                    _value = (T)xmlValue;
+                }
             }
             finally
             {
@@ -54,7 +63,14 @@ namespace OOD.Core.Database
         {
             if (!UsingDefaultValue)
             {
-                SerializeProperty(writer, serializer, _tag, _value, true);
+                if (XmlSerializable.IsTypeCLR(typeof(T)))
+                {
+                    SerializeCLRProperty(writer, _tag, _value);
+                }
+                else if (typeof(T) is IXmlSerializable)
+                {
+                    SerializeXmlProperty(writer, _tag, (IXmlSerializable)_value);
+                }
             }
         }
 

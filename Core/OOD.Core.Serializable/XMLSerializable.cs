@@ -10,6 +10,11 @@ using System.Xml.Serialization;
 
 namespace OOD.Core.Serializable
 {
+    public class NotCLRTypeException : Exception
+    {
+        public NotCLRTypeException(string message) : base(message) { }
+    }
+
     public abstract class XmlSerializable : IXmlSerializable
     {
         protected static readonly XmlSerializer _intSerializer = new XmlSerializer(typeof(int));
@@ -25,51 +30,66 @@ namespace OOD.Core.Serializable
             return null;
         }
         #region Deserialize
-        public void DeserializeFromXml(TextReader stream)
+        public void DeserializeFromXmlStream(TextReader stream)
         {
             XmlReader reader = XmlReader.Create(stream);
             ReadXml(reader);
         }
-        public void DeserializeFromXml(string str)
+        public void DeserializeFromXmlString(string str)
         {
             StringReader stream = new StringReader(str);
-            DeserializeFromXml(stream);
+            DeserializeFromXmlStream(stream);
+        }
+        public bool DeserializeFromXmlFile(string path)
+        {
+            StreamReader stream;
+            try
+            {
+                stream = new StreamReader(path);
+            }
+            catch
+            {
+                return false;
+            }
+            DeserializeFromXmlStream(stream);
+            return true;
         }
         public void ReadXml(XmlReader reader)
         {
-            ReadXml(reader, false);
+            ReadXml(reader, true);
         }
-        public abstract void ReadXml(XmlReader reader, bool ignoreItemTag = false);
+        public abstract void ReadXml(XmlReader reader, bool includeStartEndElement = true);
 
         /// <summary>
-        /// If ignoreItemTag is false, will attempt to ReadStartElement of the given tag.
+        /// If includeStartElement is true, will attempt to ReadStartElement of the given tag.
         /// </summary>
         /// <param name="writer">The XmlWriter from which the object is deserialized.</param>
         /// <param name="tag">The name of the element.</param>
-        /// <param name="ignoreItemTag">Whether to ignore the start element.</param>
-        public static void AttemptReadStartTag(XmlReader writer, string tag, bool ignoreItemTag)
+        /// <param name="includeStartElement">Whether the object is wrapped in its own start and end element.</param>
+        public static bool AttemptReadStartElement(XmlReader writer, string tag, bool includeStartElement = true)
         {
-            if (!ignoreItemTag)
+            if (includeStartElement)
             {
-                try { writer.ReadStartElement(tag); } catch { }
+                try { writer.ReadStartElement(tag); } catch { return false; }
             }
+            return true;
         }
 
         /// <summary>
-        /// If ignoreItemTag is false, will attempt to ReadEndElement.
+        /// If includeEndElement is true, will attempt to ReadEndElement.
         /// </summary>
         /// <param name="writer">The XmlWriter from which the object is deserialized.</param>
-        /// <param name="ignoreItemTag">Whether to ignore the end element.</param>
-        public static void AttemptReadEndTag(XmlReader writer, bool ignoreItemTag)
+        /// <param name="includeEndElement">Whether the object is wrapped in its own start and end element.</param>
+        public static void AttemptReadEndElement(XmlReader writer, bool includeEndElement = true)
         {
-            if (!ignoreItemTag)
+            if (includeEndElement)
             {
                 try { writer.ReadEndElement(); } catch { }
             }
         }
         #endregion Deserialize
         #region Serialize
-        public virtual void SerializeToXml(TextWriter stream)
+        public void SerializeToXmlStream(TextWriter stream)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
@@ -79,40 +99,55 @@ namespace OOD.Core.Serializable
             writer.Close();
         }
 
-        public virtual string SerializeToXml()
+        public string SerializeToXmlString()
         {
             StringWriter stream = new StringWriter();
-            SerializeToXml(stream);
+            SerializeToXmlStream(stream);
             return stream.ToString();
+        }
+
+        public bool SerializeToXmlFile(string path)
+        {
+            StreamWriter stream;
+            try
+            {
+                stream = new StreamWriter(path, false);
+            }
+            catch
+            {
+                return false;
+            }
+            SerializeToXmlStream(stream);
+            return true;
         }
         public void WriteXml(XmlWriter writer)
         {
-            WriteXml(writer, false);
+            WriteXml(writer, true);
         }
-        public abstract void WriteXml(XmlWriter writer, bool ignoreItemTag = false);
+        public abstract void WriteXml(XmlWriter writer, bool includeStartElement = true);
 
         /// <summary>
-        /// If ignoreItemTag is false, will WriteStartElement of the given tag.
+        /// If includeStartElement is true, will WriteStartElement of the given tag.
         /// </summary>
         /// <param name="writer">The XmlWriter to which the object is serialized.</param>
         /// <param name="tag">The name of the element.</param>
-        /// <param name="ignoreItemTag">Whether to ignore the start element.</param>
-        public static void AttemptWriteStartTag(XmlWriter writer, string tag, bool ignoreItemTag)
+        /// <param name="includeStartElement">Whether the object is wrapped in its own start and end element.</param>
+        public static void AttemptWriteStartElement(XmlWriter writer, string tag, bool includeStartElement = true)
         {
-            if (!ignoreItemTag)
+            if (includeStartElement)
             {
                 writer.WriteStartElement(tag);
             }
         }
 
         /// <summary>
-        /// If ignoreItemTag is false, will WriteEndElement.
+        /// If includeEndElement is true, will WriteEndElement of the given tag.
         /// </summary>
         /// <param name="writer">The XmlWriter to which the object is serialized.</param>
-        /// <param name="ignoreItemTag">Whether to ignore the end element.</param>
-        public static void AttemptWriteEndTag(XmlWriter writer, bool ignoreItemTag)
+        /// <param name="includeEndElement">Whether the object is wrapped in its own start and end element.</param>
+        public static void AttemptWriteEndElement(XmlWriter writer, bool includeEndElement = true)
         {
-            if (!ignoreItemTag)
+            if (includeEndElement)
             {
                 writer.WriteEndElement();
             }
@@ -121,184 +156,106 @@ namespace OOD.Core.Serializable
 
         #region Serialize properties
         /// <summary>
-        /// Converts an integer to its XML representation.
+        /// Creates an XML representation from a CLR type value.
         /// </summary>
-        /// <param name="writer">The XmlWriter stream to which the object is serialized.</param>
-        /// <param name="tag">The name of the element the integer will be wrapped in.</param>
-        /// <param name="property">The integer value to serialize.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void SerializeIntProperty(XmlWriter writer, string tag, int property, bool ignoreItemTag = true)
+        /// <typeparam name="T">The CLR type.</typeparam>
+        /// <param name="writer">The XmlWriter object to serialize the value to.</param>
+        /// <param name="tag">The name of the element.</param>
+        /// <param name="property">The value to serialize.</param>
+        public static void SerializeCLRProperty<T>(XmlWriter writer, string tag, T property)
         {
-            SerializeProperty(writer, _intSerializer, tag, property, ignoreItemTag);
-        }
-
-        /// <summary>
-        /// Converts a boolean to its XML representation.
-        /// </summary>
-        /// <param name="writer">The XmlWriter stream to which the object is serialized.</param>
-        /// <param name="tag">The name of the element the boolean will be wrapped in.</param>
-        /// <param name="property">The boolean value to serialize.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void SerializeBoolProperty(XmlWriter writer, string tag, bool property, bool ignoreItemTag = true)
-        {
-            SerializeStringProperty(writer, tag, property.ToString().ToLower(), ignoreItemTag);
-        }
-
-        /// <summary>
-        /// Converts a string to its XML representation.
-        /// </summary>
-        /// <param name="writer">The XmlWriter stream to which the object is serialized.</param>
-        /// <param name="tag">The name of the element the string will be wrapped in.</param>
-        /// <param name="property">The string value to serialize.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void SerializeStringProperty(XmlWriter writer, string tag, string property, bool ignoreItemTag = true)
-        {
-            SerializeProperty(writer, _stringSerializer, tag, property, ignoreItemTag);
-        }
-
-        /// <summary>
-        /// Converts an object to its XML representation.
-        /// </summary>
-        /// <param name="writer">The XmlWriter stream to which the object is serialized.</param>
-        /// <param name="serializer">The XmlSerializer for the type of the object.</param>
-        /// <param name="tag">The name of the element the object will be wrapped in.</param>
-        /// <param name="property">The object value to serialize.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void SerializeProperty<T>(XmlWriter writer, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
-        {
-            writer.WriteStartElement(tag);
-            try
+            if (!IsTypeCLR(typeof(T)))
             {
-                if (ignoreItemTag)
-                {
-                    writer.WriteValue(property);
-                }
-                else
-                {
-                    serializer.Serialize(writer, property);
-                }
+                throw new NotCLRTypeException(typeof(T).ToString() + " is not a CLR type");
             }
-            finally
+            AttemptWriteStartElement(writer, tag);
+            if (typeof(T) == typeof(bool))
             {
-                writer.WriteEndElement();
+                writer.WriteValue(property.ToString().ToLower());
             }
+            else
+            {
+                writer.WriteValue(property.ToString());
+            }
+            AttemptWriteEndElement(writer);
+        }
+
+        public static bool IsTypeCLR(Type type)
+        {
+            return type.IsPrimitive || type == typeof(string);
         }
 
         /// <summary>
         /// Converts an XmlSerializable object to its XML representation.
         /// </summary>
         /// <param name="writer">The XmlWriter stream to which the object is serialized.</param>
-        /// <param name="serializer">The XmlSerializer for the type of the object.</param>
         /// <param name="tag">The name of the element the object will be wrapped in.</param>
         /// <param name="property">The object value to serialize.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void SerializeXmlProperty<T>(XmlWriter writer, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
+        public static void SerializeXmlProperty<T>(XmlWriter writer, string tag, T property)
             where T: IXmlSerializable
         {
-            writer.WriteStartElement(tag);
+            AttemptWriteStartElement(writer, tag);
             try
             {
-                property.WriteXml(writer, ignoreItemTag);
+                property.WriteXml(writer, false);
             }
             finally
             {
-                writer.WriteEndElement();
+                AttemptWriteEndElement(writer);
             }
         }
         #endregion Serialize properties
         #region Deserialize properties
         /// <summary>
-        /// Generates an integer from its XML representation.
+        /// Generates a CLR type value from its XML representation.
         /// </summary>
-        /// <param name="reader">The XmlReader stream to which the object is serialized.</param>
-        /// <param name="tag">The name of the element the integer is wrapped in.</param>
-        /// <param name="property">The deserialized integer value.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void DeserializeIntProperty(XmlReader reader, string tag, out int property, bool ignoreItemTag = true)
+        /// <typeparam name="T">The CLR type.</typeparam>
+        /// <param name="reader">The XmlReader object to deserialize the value from.</param>
+        /// <param name="tag">The name of the element.</param>
+        /// <param name="property">The value to deserialize.</param>
+        public static bool DeserializeCLRProperty<T>(XmlReader reader, string tag, out T property)
         {
-            DeserializeProperty(reader, _intSerializer, tag, out property, ignoreItemTag);
-        }
-
-        /// <summary>
-        /// Generates a boolean from its XML representation.
-        /// </summary>
-        /// <param name="reader">The XmlReader stream to which the object is serialized.</param>
-        /// <param name="tag">The name of the element the boolean is wrapped in.</param>
-        /// <param name="property">The deserialized boolean value.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void DeserializeBoolProperty(XmlReader reader, string tag, out bool property, bool ignoreItemTag = true)
-        {
-            DeserializeProperty(reader, _boolSerializer, tag, out property, ignoreItemTag);
-        }
-
-        /// <summary>
-        /// Generates a string from its XML representation.
-        /// </summary>
-        /// <param name="reader">The XmlReader stream to which the object is serialized.</param>
-        /// <param name="tag">The name of the element the string is wrapped in.</param>
-        /// <param name="property">The deserialized string value.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void DeserializeStringProperty(XmlReader reader, string tag, out string property, bool ignoreItemTag = true)
-        {
-            DeserializeProperty(reader, _stringSerializer, tag, out property, ignoreItemTag);
-        }
-
-        /// <summary>
-        /// Generates an object from its XML representation.
-        /// </summary>
-        /// <param name="reader">The XmlReader stream to which the object is serialized.</param>
-        /// <param name="serializer">The XmlSerializer for the type of the object.</param>
-        /// <param name="tag">The name of the element the object is wrapped in.</param>
-        /// <param name="property">The deserialized object value.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static bool DeserializeProperty<T>(XmlReader reader, XmlSerializer serializer, string tag, out T property, bool ignoreItemTag = true)
-        {
-            property = default(T);
-            try { reader.ReadStartElement(tag); } catch { return false; }
+            if (!IsTypeCLR(typeof(T)))
+            {
+                throw new NotCLRTypeException(typeof(T).ToString() + " is not a CLR type");
+            }
+            if (!AttemptReadStartElement(reader, tag))
+            {
+                property = default(T);
+                return false;
+            }
             try
             {
-                if (ignoreItemTag)
-                {
-                    property = (T)reader.ReadContentAs(typeof(T), null);
-                }
-                else
-                {
-                    property = (T)serializer.Deserialize(reader);
-                }
+                property = (T)reader.ReadContentAs(typeof(T), null);
+                return true;
             }
             finally
             {
-                reader.ReadEndElement();
+                AttemptReadEndElement(reader);
             }
-            return true;
         }
-
         /// <summary>
         /// Generates an XMLSerializable object from its XML representation.
         /// </summary>
         /// <param name="reader">The XmlReader stream to which the object is serialized.</param>
-        /// <param name="serializer">The XmlSerializer for the type of the object.</param>
         /// <param name="tag">The name of the element the object is wrapped in.</param>
         /// <param name="property">The deserialized object value.</param>
-        /// <param name="ignoreItemTag">Whether the object is wrapped in its own tag</param>
-        public static void DeserializeXmlProperty<T>(XmlReader reader, XmlSerializer serializer, string tag, T property, bool ignoreItemTag = true)
-            where T: System.Xml.Serialization.IXmlSerializable
+        public static bool DeserializeXmlProperty<T>(XmlReader reader, string tag, T property)
+            where T: IXmlSerializable
         {
-            reader.ReadStartElement(tag);
+            AttemptReadStartElement(reader, tag);
+            if (!AttemptReadStartElement(reader, tag))
+            {
+                return false;
+            }
             try
             {
-                if (ignoreItemTag)
-                {
-                    property.ReadXml(reader);
-                }
-                else
-                {
-                    property = (T)serializer.Deserialize(reader);
-                }
+                property.ReadXml(reader, false);
+                return true;
             }
             finally
             {
-                reader.ReadEndElement();
+                AttemptReadEndElement(reader);
             }
         }
         #endregion Deserialize properties

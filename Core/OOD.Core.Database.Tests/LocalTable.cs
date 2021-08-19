@@ -15,23 +15,23 @@ namespace OOD.Core.Database.Tests
             "<SerializableDictionary>" +
                 "<Item>" +
                     "<Key>one</Key>" +
-                    "<Value id=\"one\" />" +
+                    "<EntityObject id=\"one\" />" +
                 "</Item>" +
                 "<Item>" +
                     "<Key>two</Key>" +
-                    "<Value id=\"two\">" +
+                    "<EntityObject id=\"two\">" +
                         "<StringValue>two</StringValue>" +
                         "<IntValue>2</IntValue>" +
                         "<BoolValue>false</BoolValue>" +
-                    "</Value>" +
+                    "</EntityObject>" +
                 "</Item>" +
                 "<Item>" +
                     "<Key>three</Key>" +
-                    "<Value id=\"three\">" +
+                    "<EntityObject id=\"three\">" +
                         "<StringValue>a much longer string</StringValue>" +
                         "<IntValue>59665</IntValue>" +
                         "<BoolValue>true</BoolValue>" +
-                    "</Value>" +
+                    "</EntityObject>" +
                 "</Item>" +
             "</SerializableDictionary>";
 
