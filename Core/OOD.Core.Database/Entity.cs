@@ -24,10 +24,10 @@ namespace OOD.Core.Database
             }
         }
         protected string _id;
-        protected string _tag = "Entity";
+        protected new string _tag = "Entity";
 
         protected abstract void Clear();
-        public void DeserializeFromXml(TextReader stream)
+        public new void DeserializeFromXml(TextReader stream)
         {
             Clear();
             XmlReader reader = XmlReader.Create(stream);
@@ -35,22 +35,13 @@ namespace OOD.Core.Database
             reader.Close();
         }
 
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-            ReadXml(reader, false);
-        }
         protected static void DeserializeItemFromXml<T>(XmlReader reader, Item<T> item)
             where T: IEquatable<T>
         {
             item.ReadXml(reader, false);
         }
 
-        public void SerializeToXml(TextWriter stream)
+        public new void SerializeToXml(TextWriter stream)
         {
             XmlWriter writer = XmlWriter.Create(stream);
             WriteXml(writer, false);
@@ -58,10 +49,6 @@ namespace OOD.Core.Database
             writer.Close();
         }
 
-        public void WriteXml(XmlWriter writer)
-        {
-            WriteXml(writer, false);
-        }
         protected static void SerializeItemToXml<T>(XmlWriter writer, Item<T> item)
             where T : IEquatable<T>
         {

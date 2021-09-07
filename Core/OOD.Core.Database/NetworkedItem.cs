@@ -8,16 +8,12 @@ using System.Xml;
 
 namespace OOD.Core.Database
 {
-    public class NetworkedItem<T>: XmlSerializable, IEquatable<Item<T>>
+    public class NetworkedItem<T>: Item<T>, IEquatable<Item<T>>
         where T : Entity, IEquatable<T>
     {
-        private T _defaultValue;
         private string _entityID;
-        private T _value;
-        private new readonly string _tag;
-        private static readonly System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
         private Table<T> _table;
-        public T Value
+        public new T Value
         {
             get
             {
@@ -27,8 +23,7 @@ namespace OOD.Core.Database
                 }
                 if (_value == null)
                 {
-                    T entityValue;
-                    if (_table.TryGetEntity(_entityID, out entityValue))
+                    if (_table.TryGetEntity(_entityID, out T entityValue))
                     {
                         _value = entityValue;
                     }
@@ -37,18 +32,12 @@ namespace OOD.Core.Database
             }
             set
             {
-                _value = value;
-                _useDefaultValue = false;
+                base.Value = value;
                 _entityID = value.ID;
             }
         }
-        public bool UsingDefaultValue { get { return _useDefaultValue; } }
-        private bool _useDefaultValue;
-        public NetworkedItem(string tag, Table<T> table, T defaultValue)
+        public NetworkedItem(string tag, Table<T> table, T defaultValue): base(tag, defaultValue)
         {
-            _tag = tag;
-            _defaultValue = defaultValue;
-            _useDefaultValue = true;
             _table = table;
         }
         public override void ReadXml(XmlReader reader, bool ignoreItemTag = false)
@@ -71,19 +60,26 @@ namespace OOD.Core.Database
             }
         }
 
-        public bool Equals(Item<T> other)
+        public bool Equals(NetworkedItem<T> other)
         {
-            return UsingDefaultValue == other.UsingDefaultValue && Value.Equals(other.Value);
+            return UsingDefaultValue == other.UsingDefaultValue && _entityID.Equals(other._entityID);
         }
 
-        public static bool operator ==(NetworkedItem<T> a, NetworkedItem<T> b)
+        public override bool Equals(object o)
         {
-            return a.Equals(b);
+            if (o is NetworkedItem<T>)
+            {
+                return ((NetworkedItem<T>)o).Equals(this);
+            }
+            return false;
         }
 
-        public static bool operator !=(NetworkedItem<T> a, NetworkedItem<T> b)
+        public override int GetHashCode()
         {
-            return !(a == b);
+            return
+                _defaultValue.GetHashCode() +
+                _entityID.GetHashCode() +
+                _tag.GetHashCode();
         }
     }
 }

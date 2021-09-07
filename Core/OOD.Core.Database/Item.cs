@@ -11,10 +11,10 @@ namespace OOD.Core.Database
     public class Item<T> : XmlSerializable, IEquatable<Item<T>>
         where T: IEquatable<T>
     {
-        private T _defaultValue;
-        private T _value;
-        private new readonly string _tag;
-        private static readonly System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
+        protected T _defaultValue;
+        protected T _value;
+        protected new readonly string _tag;
+        protected static readonly System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
         public T Value
         {
             get
@@ -28,10 +28,10 @@ namespace OOD.Core.Database
             set { 
                 _value = value;
                 _useDefaultValue = false;
-            }
+            }   
         }
         public bool UsingDefaultValue { get { return _useDefaultValue; } }
-        private bool _useDefaultValue;
+        protected bool _useDefaultValue;
         public Item(string tag, T defaultValue)
         {
             _tag = tag;
@@ -71,6 +71,23 @@ namespace OOD.Core.Database
         public static bool operator !=(Item<T> a, Item<T> b)
         {
             return !(a == b);
+        }
+
+        public override bool Equals(object o)
+        {
+            if (o is Item<T>)
+            {
+                return ((Item<T>)o).Equals(this);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return
+                _defaultValue.GetHashCode() +
+                _value.GetHashCode() +
+                _tag.GetHashCode();
         }
     }
 }
