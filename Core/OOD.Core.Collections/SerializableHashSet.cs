@@ -15,7 +15,7 @@ namespace OOD.Core.Collections
         #region XML
         public XmlSchema GetSchema()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         #region Deserialize XML
