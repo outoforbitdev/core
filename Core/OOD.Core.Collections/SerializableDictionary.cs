@@ -9,77 +9,15 @@ using System.Xml.Serialization;
 
 namespace OOD.Core.Collections
 {
-    public class SerializableDictionary<TKey, TValue> : System.Collections.Generic.Dictionary<TKey, TValue>, Serializable.IXmlSerializable
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, Serializable.IXmlSerializable
         where TValue: Serializable.IXmlSerializable, new()
     {
         private const string _tag = "SerializableDictionary";
         private const string _itemTag = "Item";
         private const string _keyTag = "Key";
         private const string _valueTag = "Value";
-
-        #region CSV serialization
-        //public void DeserializeFromCSV(TextReader stream)
-        //{
-        //    while (true)
-        //    {
-        //        this.Clear();
-        //        string line = stream.ReadLine();
-        //        if (line == null)
-        //        {
-        //            break;
-        //        }
-        //        DeserializeLineFromCSV(line);
-        //    }
-        //}
-
-        //public void DeserializeFromCSV(string text)
-        //{
-        //    StringReader stream = new StringReader(text);
-        //    DeserializeFromCSV(stream);
-        //}
-        //private void DeserializeLineFromCSV(string line)
-        //{
-        //    string[] fields = CSVSerializer.GetFields(line);
-        //    if (fields.Length < 2)
-        //    {
-        //        throw new CSVUnparseableException("Unable to parse as key-value pair: " + line);
-        //    }
-        //    TKey key = new TKey();
-        //    key.DeserializeFromCSV(fields[0]);
-        //    TValue value = new TValue();
-        //    value.DeserializeFromCSV(string.Join(",", fields.TakeLast(fields.Length - 1)));
-        //    if (!TryAdd(key, value))
-        //    {
-        //        throw new CSVUnparseableException("Duplicate key: " + key.ToString());
-        //    }
-        //}
-
-        //public void SerializeToCSV(TextWriter stream)
-        //{
-        //    foreach (TKey k in Keys)
-        //    {
-        //        stream.WriteLine(SerializeKeyValuePairToCSV(k));
-        //    }
-        //}
-
-        //public string SerializeToCSV()
-        //{
-        //    string result = "";
-        //    foreach(TKey k in Keys)
-        //    {
-        //        result = SerializeKeyValuePairToCSV(k);
-        //    }
-        //    return result.Trim('\n');
-        //}
-
-        //private string SerializeKeyValuePairToCSV(TKey k)
-        //{
-        //    return k.SerializeToCSV() + "," + this[k].SerializeToCSV();
-        //}
-        #endregion CSV serialization
-
+          
         #region XML
-
         public XmlSchema GetSchema()
         {
             throw new NotImplementedException();
@@ -91,11 +29,13 @@ namespace OOD.Core.Collections
             XmlReader reader = XmlReader.Create(stream);
             ReadXml(reader);
         }
+          
         public void DeserializeFromXmlString(string str)
         {
             StringReader stream = new StringReader(str);
             DeserializeFromXmlStream(stream);
         }
+          
         public bool DeserializeFromXmlFile(string path)
         {
             StreamReader stream;
@@ -110,10 +50,12 @@ namespace OOD.Core.Collections
             DeserializeFromXmlStream(stream);
             return true;
         }
+          
         public void ReadXml(XmlReader reader)
         {
             ReadXml(reader, true);
         }
+          
         public void ReadXml(XmlReader reader, bool includeStartEndElement = true)
         {
             bool wasEmpty = reader.IsEmptyElement;
@@ -211,6 +153,7 @@ namespace OOD.Core.Collections
             SerializeToXmlStream(stream);
             return true;
         }
+          
         public void WriteXml(XmlWriter writer)
         {
             WriteXml(writer, true);
