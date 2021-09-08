@@ -55,7 +55,7 @@ namespace OOD.Core.Database
         {
             try
             {
-                _useDefaultValue = !DeserializeProperty(reader, serializer, _tag, out _entityID, true);
+                _useDefaultValue = !DeserializeCLRProperty(reader, _tag, out _entityID);
             }
             finally
             {
@@ -67,7 +67,7 @@ namespace OOD.Core.Database
         {
             if (!UsingDefaultValue)
             {
-                SerializeProperty(writer, serializer, _tag, _entityID, true);
+                SerializeCLRProperty(writer, _tag, _entityID);
             }
         }
 

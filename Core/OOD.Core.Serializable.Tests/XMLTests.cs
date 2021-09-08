@@ -23,7 +23,7 @@ namespace OOD.Core.Serializable.Tests
         {
             var stream = new StringWriter();
 
-            _simpleObject.SerializeToXml(stream);
+            _simpleObject.SerializeToXmlStream(stream);
             Assert.Equal(_simpleString, stream.ToString());
         }
         [Fact]
@@ -31,7 +31,7 @@ namespace OOD.Core.Serializable.Tests
         {
             var stream = new StringReader(_simpleString);
             SerializableObject result = new SerializableObject(0, false);
-            result.DeserializeFromXml(stream);
+            result.DeserializeFromXmlStream(stream);
             Assert.Equal(_simpleObject, result);
         }
     }

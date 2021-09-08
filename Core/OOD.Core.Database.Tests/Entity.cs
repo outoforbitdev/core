@@ -68,7 +68,7 @@ namespace OOD.Core.Database.Tests
         public void SerializeDefault()
         {
             StringWriter stream = new StringWriter();
-            Default().SerializeToXml(stream);
+            Default().SerializeToXmlStream(stream);
             Assert.Equal(_defaultXmlString, stream.ToString());
         }
         [Fact]
@@ -76,7 +76,7 @@ namespace OOD.Core.Database.Tests
         {
             StringReader stream = new StringReader(_defaultXmlString);
             EntityObject value = Default();
-            value.DeserializeFromXml(stream);
+            value.DeserializeFromXmlStream(stream);
             Assert.Equal(Default(), value);
         }
         [Fact]
@@ -87,7 +87,7 @@ namespace OOD.Core.Database.Tests
             value.StringValue.Value = "a new string";
             value.IntValue.Value = 84;
             value.BoolValue.Value = false;
-            value.SerializeToXml(stream);
+            value.SerializeToXmlStream(stream);
             Assert.Equal(_valueXmlString, stream.ToString());
         }
         [Fact]
@@ -99,7 +99,7 @@ namespace OOD.Core.Database.Tests
             expected.IntValue.Value = 84;
             expected.BoolValue.Value = false;
             EntityObject value = Default();
-            value.DeserializeFromXml(stream);
+            value.DeserializeFromXmlStream(stream);
             Assert.Equal(expected, value);
         }
     }

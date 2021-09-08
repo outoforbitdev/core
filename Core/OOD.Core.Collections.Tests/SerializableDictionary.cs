@@ -26,17 +26,17 @@ namespace OOD.Core.Collections.Tests
             "<SerializableDictionary>" +
                 "<Item>" +
                     "<Key>first</Key>" +
-                    "<Value>" +
+                    "<SerializableObject>" +
                         "<Number>1</Number>" +
                         "<Boolean>true</Boolean>" +
-                    "</Value>" +
+                    "</SerializableObject>" +
                 "</Item>" +
                 "<Item>" +
                     "<Key>second</Key>" +
-                    "<Value>" +
+                    "<SerializableObject>" +
                         "<Number>3</Number>" +
                         "<Boolean>false</Boolean>" +
-                    "</Value>" +
+                    "</SerializableObject>" +
                 "</Item>" +
             "</SerializableDictionary>";
 
@@ -45,7 +45,7 @@ namespace OOD.Core.Collections.Tests
         {
             var stream = new StringWriter();
 
-            TestDictionary().SerializeToXml(stream);
+            TestDictionary().SerializeToXmlStream(stream);
             Assert.Equal(_simpleString, stream.ToString());
         }
         [Fact]
@@ -53,7 +53,7 @@ namespace OOD.Core.Collections.Tests
         {
             var stream = new StringReader(_simpleString);
             TestDicType result = new TestDicType();
-            result.DeserializeFromXml(stream);
+            result.DeserializeFromXmlStream(stream);
             Assert.Equal(TestDictionary(), result);
         }
         #endregion XML
