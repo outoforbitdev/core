@@ -43,7 +43,7 @@ namespace OOD.Core.Database
         {
             try
             {
-                _entities.DeserializeFromXml(path);
+                _entities.DeserializeFromXmlFile(path);
                 _path = path;
                 return true;
             }
@@ -62,7 +62,7 @@ namespace OOD.Core.Database
         {
             try
             {
-                _entities.SerializeToXml(path);
+                _entities.SerializeToXmlFile(path);
                 _path = path;
                 return true;
             }
@@ -73,7 +73,7 @@ namespace OOD.Core.Database
         }
         public override void SaveAs(TextWriter stream)
         {
-            _entities.SerializeToXml(stream);
+            _entities.SerializeToXmlStream(stream);
         }
 
         public override bool TryAddEntity(T entity)

@@ -41,20 +41,20 @@ namespace OOD.Core.Serializable.Tests
             _boolean = boolean;
         }
 
-        public override void ReadXml(XmlReader reader, bool ignoreItemTag)
+        public override void ReadXml(XmlReader reader, bool includeStartEndElement)
         {
-            SerializableObject.AttemptReadStartTag(reader, _tag, ignoreItemTag);
-            DeserializeIntProperty(reader, _numberTag, out Number);
-            DeserializeBoolProperty(reader, _booleanTag, out _boolean);
-            SerializableObject.AttemptReadEndTag(reader, ignoreItemTag);
+            SerializableObject.AttemptReadStartElement(reader, _tag, includeStartEndElement);
+            DeserializeCLRProperty(reader, _numberTag, out Number);
+            DeserializeCLRProperty(reader, _booleanTag, out _boolean);
+            SerializableObject.AttemptReadEndElement(reader, includeStartEndElement);
         }
 
-        public override void WriteXml(XmlWriter writer, bool ignoreItemTag)
+        public override void WriteXml(XmlWriter writer, bool includeStartEndElement)
         {
-            SerializableObject.AttemptWriteStartTag(writer, _tag, ignoreItemTag);
-            SerializeIntProperty(writer, _numberTag, Number);
-            SerializeBoolProperty(writer, _booleanTag, _boolean);
-            SerializableObject.AttemptWriteEndTag(writer, ignoreItemTag);
+            SerializableObject.AttemptWriteStartElement(writer, _tag, includeStartEndElement);
+            SerializeCLRProperty(writer, _numberTag, Number);
+            SerializeCLRProperty(writer, _booleanTag, _boolean);
+            SerializableObject.AttemptWriteEndElement(writer, includeStartEndElement);
         }
 
         public bool Equals(SerializableObject other)

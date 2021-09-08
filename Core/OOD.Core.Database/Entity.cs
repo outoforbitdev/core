@@ -24,35 +24,6 @@ namespace OOD.Core.Database
             }
         }
         protected string _id;
-        protected new string _tag = "Entity";
-
-        protected abstract void Clear();
-        public new void DeserializeFromXml(TextReader stream)
-        {
-            Clear();
-            XmlReader reader = XmlReader.Create(stream);
-            ReadXml(reader, false);
-            reader.Close();
-        }
-
-        protected static void DeserializeItemFromXml<T>(XmlReader reader, Item<T> item)
-            where T: IEquatable<T>
-        {
-            item.ReadXml(reader, false);
-        }
-
-        public new void SerializeToXml(TextWriter stream)
-        {
-            XmlWriter writer = XmlWriter.Create(stream);
-            WriteXml(writer, false);
-            writer.Flush();
-            writer.Close();
-        }
-
-        protected static void SerializeItemToXml<T>(XmlWriter writer, Item<T> item)
-            where T : IEquatable<T>
-        {
-            item.WriteXml(writer, false);
-        }
+        protected string _tag = "Entity";
     }
 }

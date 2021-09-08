@@ -56,7 +56,7 @@ namespace OOD.Core.Database.Tests
             StringReader stream = new StringReader(_defaultString);
             XmlReader reader = XmlReader.Create(stream);
             var value = Default();
-            value.ReadXml(reader, true);
+            value.ReadXml(reader);
             Assert.Equal("default", value.Value);
         }
         [Fact]
@@ -66,7 +66,7 @@ namespace OOD.Core.Database.Tests
             value.Value = "real value";
             StringWriter stream = new StringWriter();
             XmlWriter writer = XmlWriter.Create(stream);
-            value.WriteXml(writer, true);
+            value.WriteXml(writer);
             writer.Flush();
             Assert.Equal(_valueString, stream.ToString());
         }
@@ -77,7 +77,7 @@ namespace OOD.Core.Database.Tests
             value.Value = "real value";
             StringReader stream = new StringReader(_valueString);
             XmlReader reader = XmlReader.Create(stream);
-            value.ReadXml(reader, true);
+            value.ReadXml(reader);
             Assert.Equal("real value", value.Value);
         }
     }
